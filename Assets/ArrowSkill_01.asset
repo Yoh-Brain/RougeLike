@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3240911dacaf7f7468091985fd2ab3a7, type: 3}
+  m_Name: ArrowSkill_01
+  m_EditorClassIdentifier: 
+  icon: {fileID: -418166143, guid: ef0f18a35cf141543b89eb0f9e94c501, type: 3}
+  skillName: "\u591A\u91CD\u5C04\u51FB"
+  description: "\u5728\u8FD9\u91CC\u586B\u5199\u6280\u80FD\u63CF\u8FF0\uFF0C\u6BD4\u5982\uFF1A\u5411\u524D\u65B9\u6247\u5F62\u53D1\u5C04\u591A\u652F\u7BAD\u77E2\u3002"
+  skillType: 0
+  cooldownTime: 2
+  damage: 10
+  arrowPrefab: {fileID: 7762080449414683802, guid: 09f91949a6294f14dbb6b1cf40376d84, type: 3}
+  arrowsPerShot: 5
+  totalSpreadAngle: 30
+  orbitWeaponPrefab: {fileID: 0}
+  orbitRadius: 0.8
+  orbitRotationSpeed: 180
+  orbitDamageInterval: 0.5
+  orbitDuration: 0
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 8

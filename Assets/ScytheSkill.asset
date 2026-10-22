@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3240911dacaf7f7468091985fd2ab3a7, type: 3}
+  m_Name: ScytheSkill
+  m_EditorClassIdentifier: 
+  icon: {fileID: 21300000, guid: 166125648606d954b9efcd73bb512c97, type: 3}
+  skillName: "\u9570\u5200\u653B\u51FB"
+  skillType: 1
+  cooldownTime: 0
+  damage: 20
+  arrowPrefab: {fileID: 0}
+  arrowsPerShot: 3
+  totalSpreadAngle: 30
+  orbitWeaponPrefab: {fileID: 4089015613042741249, guid: 0ac9638568bbc6a43aea1c00081d5a6d, type: 3}
+  orbitRadius: 2
+  orbitRotationSpeed: 180
+  orbitDamageInterval: 0.5
+  orbitDuration: 0
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 8

@@ -1,0 +1,28 @@
+# Unity 生成的文件夹
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+.utmp/
+
+# Visual Studio / Rider 缓存
+.vs/
+.idea/
+*.csproj
+*.sln
+*.user
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+
+# 系统与日志文件
+*.log
+*.tmp
+*.bak
+.DS_Store
+Thumbs.db
