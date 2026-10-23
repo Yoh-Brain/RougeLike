@@ -12,18 +12,18 @@ public class EnemyAttack : MonoBehaviour
     public bool IsAttacking { get; private set; } = false;
     private float nextAttackTime = 0f;
     private Animator anim;
-    private MonsterBase baseScript;
+    private EnemyHealth healthScript; // 【修改】改为 EnemyHealth
 
     void Start()
     {
         anim = GetComponent<Animator>();
-        baseScript = GetComponent<MonsterBase>();
+        healthScript = GetComponent<EnemyHealth>(); // 【修改】
     }
 
     public void TryAttack()
     {
-        // 【核心拦截】：如果已死，不准攻击
-        if (baseScript != null && baseScript.IsDead) return;
+        // 【修改】从 healthScript 获取死亡状态
+        if (healthScript != null && healthScript.IsDead) return;
 
         if (IsAttacking || Time.time < nextAttackTime) return;
         StartCoroutine(AttackRoutine());
@@ -45,7 +45,8 @@ public class EnemyAttack : MonoBehaviour
     // 由动画事件调用
     public void OnAttackHitEvent()
     {
-        if (baseScript != null && baseScript.IsDead) return;
+        // 【修改】从 healthScript 获取死亡状态
+        if (healthScript != null && healthScript.IsDead) return;
 
         Collider2D hit = Physics2D.OverlapCircle(transform.position, attackStopRange, playerLayer);
 

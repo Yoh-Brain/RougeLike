@@ -4,6 +4,9 @@ using UnityEngine;
 // 继承 MonoBehaviour，并实现 IDieable 和 IDamageable 接口
 public class PlayerHealth : MonoBehaviour, IDieable, IDamageable
 {
+
+    public bool IsDead => isDead;
+
     [Header("生命值设置")]
     public int maxHealth = 5;
     public int CurrentHealth { get; private set; }

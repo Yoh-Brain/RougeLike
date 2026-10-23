@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 2210159066774272553}
   - component: {fileID: 2210159066774272552}
   - component: {fileID: 2210159066774272555}
+  - component: {fileID: 6939093461907945489}
   m_Layer: 3
   m_Name: Torch_Blue_0
   m_TagString: Enemy
@@ -141,8 +142,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentState: 0
-  speed: 4
-  detectionRadius: 6
+  speed: 1
 --- !u!95 &2210159066774272553
 Animator:
   serializedVersion: 5
@@ -177,8 +177,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackCooldown: 1.5
-  attackRange: 1.5
-  attackStopRange: 1.8
+  attackRange: 1
+  attackStopRange: 1
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -194,15 +194,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d8c2895ba5e974449ab07281fabdbd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  knockbackSpeed: 8
-  knockbackDuration: 0.2
-  xpPrefab: {fileID: 0}
+  xpPrefab: {fileID: 5654934014747178011, guid: 049ba38494a89d64d9c07a4d02408439, type: 3}
   xpAmount: 10
   goldPrefab: {fileID: 2140218815030980963, guid: 683b96ee4dff3b94ca07247d9855f534, type: 3}
   goldAmountMin: 1
   goldAmountMax: 5
   goldDropChance: 0.5
+--- !u!114 &6939093461907945489
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2210159066774272574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3406eb2548284941a533c915676b3d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  knockbackSpeed: 8
+  knockbackDuration: 0.2
 --- !u!1 &2210159067572328351
 GameObject:
   m_ObjectHideFlags: 0

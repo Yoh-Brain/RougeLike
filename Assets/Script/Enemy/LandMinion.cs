@@ -2,16 +2,13 @@ using UnityEngine;
 
 public class LandMinion : MeleeMonster
 {
-    protected override void Awake()
+    protected override void Start()
     {
-        base.Awake();
+        base.Start(); // 调用 MeleeMonster 里的 Start（设置重力）
 
-        // 可以在代码里覆写基础属性
-        maxHealth = 30f;
-        currentHealth = maxHealth;
+        // 血量已经不需要在这里设置了，完全交给 EnemyHealth 和 Spawner 统一调度
 
-        // 【新增】在这里初始化特定怪物的掉落数据
-        // （或者你直接在 Inspector 面板上改也行，这里只是为了演示代码怎么控制）
+        // 在这里初始化特定怪物的掉落数据
         xpAmount = 15;
         goldAmountMin = 1;
         goldAmountMax = 3;

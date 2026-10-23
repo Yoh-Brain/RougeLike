@@ -3,10 +3,10 @@ using UnityEngine;
 // 近战类派系
 public abstract class MeleeMonster : MonsterBase
 {
-    protected override void Awake()
+    protected virtual void Start()
     {
-        base.Awake();
-        // 近战怪通常受重力影响
+        // 近战怪通常受重力影响 (直接获取组件，不再依赖 MonsterBase)
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
         if (rb != null) rb.gravityScale = 1f;
     }
 }
@@ -14,11 +14,10 @@ public abstract class MeleeMonster : MonsterBase
 // 飞行类派系
 public abstract class FlyingMonster : MonsterBase
 {
-    protected override void Awake()
+    protected virtual void Start()
     {
-        base.Awake();
         // 飞行怪通常忽略重力和地形碰撞
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
         if (rb != null) rb.gravityScale = 0f;
-        // 这里可以开启无视差、悬浮动画等
     }
 }

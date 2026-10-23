@@ -7,12 +7,10 @@ public class EnemyMovement : MonoBehaviour
 
     [Header("移动设置")]
     public float speed = 4f;
-    public float detectionRadius = 6f;
 
-    [Header("组件引用")]
     private Transform player;
     private Rigidbody2D rb;
-    private MonsterBase baseScript;
+    private EnemyHealth healthScript; // 【修改】改为找 EnemyHealth
     private EnemyAttack attackScript;
     private Animator anim;
     private SpriteRenderer sr;
@@ -20,7 +18,7 @@ public class EnemyMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        baseScript = GetComponent<MonsterBase>();
+        healthScript = GetComponent<EnemyHealth>(); // 【修改】
         attackScript = GetComponent<EnemyAttack>();
         anim = GetComponent<Animator>();
         sr = GetComponent<SpriteRenderer>();
@@ -31,28 +29,17 @@ public class EnemyMovement : MonoBehaviour
 
     void Update()
     {
-        // 【核心拦截】：如果怪物已死，彻底停止移动脚本的逻辑
-        if (baseScript != null && baseScript.IsDead) return;
+        // 【修改】从 healthScript 里判断死活和击退
+        if (healthScript != null && healthScript.IsDead) return;
+        if (healthScript != null && healthScript.IsKnockedBack) return;
 
-        if (baseScript != null && baseScript.IsKnockedBack)
-        {
-            if (currentState != EnemyState.Idle) ChangeState(EnemyState.Idle);
-            if (rb != null) rb.velocity = Vector2.zero;
-            return;
-        }
-
-        if (player == null || baseScript == null || attackScript == null) return;
+        if (player == null || healthScript == null || attackScript == null) return;
 
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
         switch (currentState)
         {
             case EnemyState.Idle:
-                rb.velocity = Vector2.zero;
-                if (distanceToPlayer <= detectionRadius)
-                    ChangeState(EnemyState.Running);
-                break;
-
             case EnemyState.Running:
                 Collider2D playerCollider = Physics2D.OverlapCircle(transform.position, attackScript.attackRange, attackScript.playerLayer);
                 if (playerCollider != null)
@@ -60,12 +47,9 @@ public class EnemyMovement : MonoBehaviour
                     ChangeState(EnemyState.Attacking);
                     attackScript.TryAttack();
                 }
-                else if (distanceToPlayer > detectionRadius * 1.2f)
-                {
-                    ChangeState(EnemyState.Idle);
-                }
                 else
                 {
+                    if (currentState != EnemyState.Running) ChangeState(EnemyState.Running);
                     Vector2 direction = (player.position - transform.position).normalized;
                     rb.velocity = direction * speed;
                     FlipSprite(direction.x);
@@ -76,9 +60,7 @@ public class EnemyMovement : MonoBehaviour
                 rb.velocity = Vector2.zero;
                 Vector2 dirToPlayer = (player.position - transform.position).normalized;
                 FlipSprite(dirToPlayer.x);
-
                 if (attackScript.IsAttacking) return;
-
                 if (distanceToPlayer > attackScript.attackStopRange)
                 {
                     ChangeState(EnemyState.Running);
@@ -109,11 +91,7 @@ public class EnemyMovement : MonoBehaviour
 
         if (currentState == EnemyState.Attacking)
         {
-            if (rb != null)
-            {
-                rb.bodyType = RigidbodyType2D.Kinematic;
-                rb.velocity = Vector2.zero;
-            }
+            if (rb != null) { rb.bodyType = RigidbodyType2D.Kinematic; rb.velocity = Vector2.zero; }
             if (anim != null) anim.SetBool("IsRunning", false);
         }
         else if (currentState == EnemyState.Running)
@@ -128,7 +106,12 @@ public class EnemyMovement : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, detectionRadius);
+        if (attackScript != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, attackScript.attackRange);
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(transform.position, attackScript.attackStopRange);
+        }
     }
 }

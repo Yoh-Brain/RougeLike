@@ -1,76 +1,112 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
-public class EnemyHealth : MonoBehaviour, IDieable // 【1】实现接口
+public class EnemyHealth : MonoBehaviour, IDamageable, IDieable
 {
     [Header("生命值设置")]
     public float maxHealth = 100f;
-    private float currentHealth;
+    public float currentHealth { get; private set; }
 
     [Header("击退设置")]
     public float knockbackSpeed = 8f;
     public float knockbackDuration = 0.2f;
 
+    public bool IsDead { get; private set; } = false;
     public bool IsKnockedBack { get; private set; } = false;
-    private bool isDead = false; // 【新增】防重复死亡
+
+    // 全局死亡事件，供 EnemySpawner 订阅
+    public static event Action OnEnemyDied;
 
     private Rigidbody2D rb;
-    private Animator anim; // 【新增】获取动画机（如果你的敌人也有死亡动画）
+    private Animator anim;
+    private Collider2D col;
 
-    void Start()
+    void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        col = GetComponent<Collider2D>();
+    }
+
+    void Start()
+    {
+        // 如果没有被 Spawner 初始化过，就默认回满血
+        if (currentHealth <= 0) currentHealth = maxHealth;
+    }
+
+    // 供生成器调用的初始化方法
+    public void InitHealth(float newMaxHealth)
+    {
+        maxHealth = newMaxHealth;
         currentHealth = maxHealth;
+        IsDead = false;
     }
 
     public void TakeDamage(float damage, Vector2 sourcePosition)
     {
-        if (isDead) return;
+        if (IsDead) return;
 
         currentHealth -= damage;
-        Debug.Log($"{gameObject.name} 受到伤害！剩余血量: {currentHealth}");
-
-        Vector2 knockbackDir = ((Vector2)transform.position - sourcePosition).normalized;
-        StartCoroutine(KnockbackRoutine(knockbackDir));
+        Debug.Log($"{gameObject.name} 受到伤害，剩余血量：{currentHealth}");
 
         if (currentHealth <= 0)
         {
-            Die(); // 【2】调用接口
+            Die();
         }
+        else
+        {
+            StartCoroutine(KnockbackRoutine(sourcePosition));
+        }
+    }
+
+    private IEnumerator KnockbackRoutine(Vector2 sourcePosition)
+    {
+        IsKnockedBack = true;
+        if (rb != null)
+        {
+            Vector2 dir = ((Vector2)transform.position - sourcePosition).normalized;
+            rb.velocity = dir * knockbackSpeed;
+        }
+
+        yield return new WaitForSeconds(knockbackDuration);
+
+        IsKnockedBack = false;
+        if (rb != null) rb.velocity = Vector2.zero;
     }
 
     public void Die()
     {
-        if (isDead) return;
-        isDead = true;
+        if (IsDead) return;
+        IsDead = true;
 
-        Debug.Log($"{gameObject.name} 死亡！");
+        Debug.Log($"{gameObject.name} 死亡！广播事件");
+        OnEnemyDied?.Invoke(); // 通知生成器补怪
 
-        // 1. 停止AI和移动逻辑
-        var movement = GetComponent<EnemyMovement>();
-        if (movement != null) movement.enabled = false;
-
-        // 2. 播放死亡动画（如果有的话）
-        if (anim != null) anim.SetTrigger("Dead");
-
-        // 3. 禁用碰撞体，防止死后挡住玩家的路
-        Collider2D col = GetComponent<Collider2D>();
+        // 1. 停止移动和物理
+        if (rb != null)
+        {
+            rb.velocity = Vector2.zero;
+            rb.gravityScale = 0f;
+            rb.simulated = false;
+        }
         if (col != null) col.enabled = false;
 
-        // 4. 如果只是简单的敌人，直接销毁
-        // Destroy(gameObject);
+        // 2. 播放死亡动画
+        if (anim != null)
+        {
+            anim.SetTrigger("Die");
+            anim.SetBool("IsRunning", false);
+        }
 
-        // 如果有死亡动画，延迟销毁
+        // 3. 让 MonsterBase 去执行掉落物逻辑（解耦）
+        MonsterBase baseScript = GetComponent<MonsterBase>();
+        if (baseScript != null)
+        {
+            baseScript.DropLoot();
+        }
+
+        // 4. 延迟销毁尸体
         Destroy(gameObject, 1f);
-    }
-
-    private IEnumerator KnockbackRoutine(Vector2 dir)
-    {
-        IsKnockedBack = true;
-        if (rb != null) rb.velocity = dir * knockbackSpeed;
-        yield return new WaitForSeconds(knockbackDuration);
-        IsKnockedBack = false;
-        if (rb != null) rb.velocity = Vector2.zero;
     }
 }
