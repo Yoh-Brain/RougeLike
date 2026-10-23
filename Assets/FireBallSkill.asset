@@ -13,14 +13,18 @@ MonoBehaviour:
   m_Name: FireBallSkill
   m_EditorClassIdentifier: 
   icon: {fileID: 21300000, guid: 3373b57d7d00b48448ca60d76f64f1b8, type: 3}
-  skillName: "\u706B\u7403"
-  description: "\u5728\u8FD9\u91CC\u586B\u5199\u6280\u80FD\u63CF\u8FF0\uFF0C\u6BD4\u5982\uFF1A\u5411\u524D\u65B9\u6247\u5F62\u53D1\u5C04\u591A\u652F\u7BAD\u77E2\u3002"
+  skillName: fire ball
+  description: fire!fire!fire!
   skillType: 0
-  cooldownTime: 2
-  damage: 20
+  baseCooldownTime: 2
+  baseDamage: 20
+  baseArrowsPerShot: 1
   arrowPrefab: {fileID: 6784351012818548267, guid: fb5a51d6a5e8ba846a6c417652fad157, type: 3}
-  arrowsPerShot: 1
   totalSpreadAngle: 30
+  maxLevel: 5
+  damageGrowthPerLevel: 5
+  arrowsGrowthPerLevel: 2
+  cooldownReductionPerLevel: 0.1
   orbitWeaponPrefab: {fileID: 0}
   orbitRadius: 0.8
   orbitRotationSpeed: 180

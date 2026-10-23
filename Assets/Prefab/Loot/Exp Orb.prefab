@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 4908378248264327901}
   - component: {fileID: 5408342485664204800}
   - component: {fileID: 4395960976179576832}
-  - component: {fileID: -4405291160095666031}
   - component: {fileID: 2210074144085477193}
   - component: {fileID: 3922418106007601511}
+  - component: {fileID: -2500990479195478278}
   m_Layer: 0
   m_Name: Exp Orb
   m_TagString: Untagged
@@ -109,20 +109,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &-4405291160095666031
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5654934014747178011}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 714f34ce9080c7c4a912a06350e312e8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lootType: 0
-  amount: 1
 --- !u!58 &2210074144085477193
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -160,3 +146,16 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &-2500990479195478278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5654934014747178011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65e73dfc5dcde624bb34e68464514ee0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  amount: 1

@@ -18,8 +18,10 @@ public abstract class MonsterBase : MonoBehaviour
         if (xpPrefab != null)
         {
             GameObject xpObj = Instantiate(xpPrefab, transform.position, Quaternion.identity);
-            LootItem xpItem = xpObj.GetComponent<LootItem>();
-            if (xpItem != null) xpItem.amount = xpAmount;
+
+            // 【修改点】从 LootItem 改为 BaseLoot
+            BaseLoot xpLoot = xpObj.GetComponent<BaseLoot>();
+            if (xpLoot != null) xpLoot.amount = xpAmount;
         }
 
         // 掉落金币
@@ -29,8 +31,10 @@ public abstract class MonsterBase : MonoBehaviour
             Vector2 randomOffset = Random.insideUnitCircle * 0.3f;
             Vector3 spawnPos = transform.position + (Vector3)randomOffset;
             GameObject goldObj = Instantiate(goldPrefab, spawnPos, Quaternion.identity);
-            LootItem goldItem = goldObj.GetComponent<LootItem>();
-            if (goldItem != null) goldItem.amount = dropAmount;
+
+            // 【修改点】从 LootItem 改为 BaseLoot
+            BaseLoot goldLoot = goldObj.GetComponent<BaseLoot>();
+            if (goldLoot != null) goldLoot.amount = dropAmount;
         }
     }
 }

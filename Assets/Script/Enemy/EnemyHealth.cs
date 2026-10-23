@@ -9,13 +9,12 @@ public class EnemyHealth : MonoBehaviour, IDamageable, IDieable
     public float currentHealth { get; private set; }
 
     [Header("击退设置")]
-    public float knockbackSpeed = 8f;
-    public float knockbackDuration = 0.2f;
+    public float knockbackDuration = 0.2f; // 击退持续时间
 
-    public bool IsDead { get; private set; } = false;
     public bool IsKnockedBack { get; private set; } = false;
+    public bool IsDead { get; private set; } = false;
 
-    // 全局死亡事件，供 EnemySpawner 订阅
+    // 全局死亡事件，供 EnemySpawner/WaveSpawner 订阅
     public static event Action OnEnemyDied;
 
     private Rigidbody2D rb;
@@ -31,11 +30,9 @@ public class EnemyHealth : MonoBehaviour, IDamageable, IDieable
 
     void Start()
     {
-        // 如果没有被 Spawner 初始化过，就默认回满血
         if (currentHealth <= 0) currentHealth = maxHealth;
     }
 
-    // 供生成器调用的初始化方法
     public void InitHealth(float newMaxHealth)
     {
         maxHealth = newMaxHealth;
@@ -43,7 +40,8 @@ public class EnemyHealth : MonoBehaviour, IDamageable, IDieable
         IsDead = false;
     }
 
-    public void TakeDamage(float damage, Vector2 sourcePosition)
+    // 实现带击退力的受击接口
+    public void TakeDamage(float damage, Vector2 sourcePosition, float knockbackForce = 0f)
     {
         if (IsDead) return;
 
@@ -54,19 +52,20 @@ public class EnemyHealth : MonoBehaviour, IDamageable, IDieable
         {
             Die();
         }
-        else
+        else if (knockbackForce > 0f)
         {
-            StartCoroutine(KnockbackRoutine(sourcePosition));
+            // 传入玩家给的击退力
+            StartCoroutine(KnockbackRoutine(sourcePosition, knockbackForce));
         }
     }
 
-    private IEnumerator KnockbackRoutine(Vector2 sourcePosition)
+    private IEnumerator KnockbackRoutine(Vector2 sourcePosition, float knockbackForce)
     {
         IsKnockedBack = true;
         if (rb != null)
         {
             Vector2 dir = ((Vector2)transform.position - sourcePosition).normalized;
-            rb.velocity = dir * knockbackSpeed;
+            rb.velocity = dir * knockbackForce;
         }
 
         yield return new WaitForSeconds(knockbackDuration);
@@ -80,33 +79,16 @@ public class EnemyHealth : MonoBehaviour, IDamageable, IDieable
         if (IsDead) return;
         IsDead = true;
 
-        Debug.Log($"{gameObject.name} 死亡！广播事件");
-        OnEnemyDied?.Invoke(); // 通知生成器补怪
+        OnEnemyDied?.Invoke(); // 通知刷怪器
 
-        // 1. 停止移动和物理
-        if (rb != null)
-        {
-            rb.velocity = Vector2.zero;
-            rb.gravityScale = 0f;
-            rb.simulated = false;
-        }
+        if (rb != null) { rb.velocity = Vector2.zero; rb.simulated = false; }
         if (col != null) col.enabled = false;
+        if (anim != null) { anim.SetTrigger("Die"); anim.SetBool("IsRunning", false); }
 
-        // 2. 播放死亡动画
-        if (anim != null)
-        {
-            anim.SetTrigger("Die");
-            anim.SetBool("IsRunning", false);
-        }
-
-        // 3. 让 MonsterBase 去执行掉落物逻辑（解耦）
+        // 执行掉落
         MonsterBase baseScript = GetComponent<MonsterBase>();
-        if (baseScript != null)
-        {
-            baseScript.DropLoot();
-        }
+        if (baseScript != null) baseScript.DropLoot();
 
-        // 4. 延迟销毁尸体
         Destroy(gameObject, 1f);
     }
 }

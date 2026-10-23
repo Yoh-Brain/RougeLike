@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 410282154881729865}
   - component: {fileID: 3636560480191105849}
   - component: {fileID: 4850540652525769256}
-  - component: {fileID: 3348132293032391416}
   - component: {fileID: 3464900131577979637}
   - component: {fileID: 5323228698740435110}
+  - component: {fileID: 5892037286443302202}
   m_Layer: 0
   m_Name: G_Idle
   m_TagString: Untagged
@@ -109,20 +109,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &3348132293032391416
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2140218815030980963}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 714f34ce9080c7c4a912a06350e312e8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lootType: 1
-  amount: 1
 --- !u!58 &3464900131577979637
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -160,3 +146,16 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &5892037286443302202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2140218815030980963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d8ba7ef50a6e454b946944247957fb4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  amount: 1

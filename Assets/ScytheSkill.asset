@@ -13,13 +13,18 @@ MonoBehaviour:
   m_Name: ScytheSkill
   m_EditorClassIdentifier: 
   icon: {fileID: 21300000, guid: 166125648606d954b9efcd73bb512c97, type: 3}
-  skillName: "\u9570\u5200\u653B\u51FB"
+  skillName: Knife
+  description: This is a real knife!
   skillType: 1
-  cooldownTime: 0
-  damage: 20
+  baseCooldownTime: 2
+  baseDamage: 20
+  baseArrowsPerShot: 1
   arrowPrefab: {fileID: 0}
-  arrowsPerShot: 3
   totalSpreadAngle: 30
+  maxLevel: 5
+  damageGrowthPerLevel: 5
+  arrowsGrowthPerLevel: 2
+  cooldownReductionPerLevel: 0.1
   orbitWeaponPrefab: {fileID: 4089015613042741249, guid: 0ac9638568bbc6a43aea1c00081d5a6d, type: 3}
   orbitRadius: 2
   orbitRotationSpeed: 180

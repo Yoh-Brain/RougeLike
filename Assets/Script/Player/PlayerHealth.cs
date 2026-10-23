@@ -1,20 +1,18 @@
 using System.Collections;
 using UnityEngine;
 
-// 继承 MonoBehaviour，并实现 IDieable 和 IDamageable 接口
 public class PlayerHealth : MonoBehaviour, IDieable, IDamageable
 {
-
-    public bool IsDead => isDead;
-
     [Header("生命值设置")]
     public int maxHealth = 5;
     public int CurrentHealth { get; private set; }
 
     [Header("无敌帧设置")]
-    public float invincibleDuration = 0.5f; // 0.5秒无敌
+    public float invincibleDuration = 0.5f;
     private bool isInvincible = false;
-    private bool isDead = false; // 防止死后重复触发
+    private bool isDead = false;
+
+    public bool IsDead => isDead; // 暴露给 PlayerAttack 用
 
     private SpriteRenderer sr;
     private Animator anim;
@@ -22,13 +20,12 @@ public class PlayerHealth : MonoBehaviour, IDieable, IDamageable
     void Start()
     {
         CurrentHealth = maxHealth;
-        sr = GetComponent<SpriteRenderer>();
-        if (sr == null) sr = GetComponentInChildren<SpriteRenderer>();
+        sr = GetComponent<SpriteRenderer>() ?? GetComponentInChildren<SpriteRenderer>();
         anim = GetComponent<Animator>();
     }
 
-    // 【实现 IDamageable 接口】
-    public void TakeDamage(float damage, Vector2 sourcePosition)
+    // 实现新接口
+    public void TakeDamage(float damage, Vector2 sourcePosition, float knockbackForce = 0f)
     {
         if (isInvincible || isDead) return;
 
@@ -37,26 +34,20 @@ public class PlayerHealth : MonoBehaviour, IDieable, IDamageable
 
         Debug.Log($"玩家受伤！剩余血量：{CurrentHealth}");
 
-        if (CurrentHealth > 0)
-        {
-            StartCoroutine(InvincibilityCoroutine());
-        }
-        else
-        {
-            Die();
-        }
+        if (CurrentHealth > 0) StartCoroutine(InvincibilityCoroutine());
+        else Die();
     }
 
-    // 【新增】供调试面板或吃药等外部调用的回血方法
+    // 【补全】供调试面板或吃药等外部调用的回血方法
     public void HealToFull()
     {
-        if (isDead) return; // 死了不能回血
+        if (isDead) return;
 
         CurrentHealth = maxHealth;
         Debug.Log($"玩家已回满血！当前血量：{CurrentHealth}");
     }
 
-    // 【新增】供调试面板直接设置血量（比如测试剩1滴血）
+    // 【补全】供调试面板直接设置血量
     public void DebugSetHealth(int amount)
     {
         if (isDead) return;
@@ -64,20 +55,15 @@ public class PlayerHealth : MonoBehaviour, IDieable, IDamageable
         CurrentHealth = Mathf.Clamp(amount, 0, maxHealth);
         Debug.Log($"调试修改血量：{CurrentHealth}");
 
-        if (CurrentHealth <= 0)
-        {
-            Die();
-        }
+        if (CurrentHealth <= 0) Die();
     }
 
-    // 【实现 IDieable 接口】
     public void Die()
     {
         if (isDead) return;
         isDead = true;
 
-        Debug.Log("玩家死亡！播放死亡动画");
-
+        Debug.Log("玩家死亡！");
         if (anim != null) anim.SetTrigger("Die");
 
         var movement = GetComponent<PlayerMovement>();
@@ -99,7 +85,7 @@ public class PlayerHealth : MonoBehaviour, IDieable, IDamageable
     {
         yield return new WaitForSeconds(1f);
         Debug.Log("1秒已到，销毁玩家对象。");
-        Destroy(gameObject);
+        // Destroy(gameObject); // 如果需要销毁可以解除注释
     }
 
     private IEnumerator InvincibilityCoroutine()
@@ -110,22 +96,12 @@ public class PlayerHealth : MonoBehaviour, IDieable, IDamageable
 
         while (timer < invincibleDuration)
         {
-            if (sr != null)
-            {
-                Color c = sr.color;
-                c.a = c.a == 1f ? 0.3f : 1f;
-                sr.color = c;
-            }
+            if (sr != null) { Color c = sr.color; c.a = c.a == 1f ? 0.3f : 1f; sr.color = c; }
             yield return blinkDelay;
             timer += 0.1f;
         }
 
-        if (sr != null)
-        {
-            Color c = sr.color;
-            c.a = 1f;
-            sr.color = c;
-        }
+        if (sr != null) { Color c = sr.color; c.a = 1f; sr.color = c; }
         isInvincible = false;
     }
 }

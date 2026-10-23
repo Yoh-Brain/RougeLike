@@ -13,14 +13,18 @@ MonoBehaviour:
   m_Name: ArrowSkill_01
   m_EditorClassIdentifier: 
   icon: {fileID: -418166143, guid: ef0f18a35cf141543b89eb0f9e94c501, type: 3}
-  skillName: "\u591A\u91CD\u5C04\u51FB"
-  description: "\u5728\u8FD9\u91CC\u586B\u5199\u6280\u80FD\u63CF\u8FF0\uFF0C\u6BD4\u5982\uFF1A\u5411\u524D\u65B9\u6247\u5F62\u53D1\u5C04\u591A\u652F\u7BAD\u77E2\u3002"
+  skillName: Arrow
+  description: Shooting!
   skillType: 0
-  cooldownTime: 2
-  damage: 10
+  baseCooldownTime: 2
+  baseDamage: 20
+  baseArrowsPerShot: 1
   arrowPrefab: {fileID: 7762080449414683802, guid: 09f91949a6294f14dbb6b1cf40376d84, type: 3}
-  arrowsPerShot: 5
   totalSpreadAngle: 30
+  maxLevel: 5
+  damageGrowthPerLevel: 5
+  arrowsGrowthPerLevel: 2
+  cooldownReductionPerLevel: 0.1
   orbitWeaponPrefab: {fileID: 0}
   orbitRadius: 0.8
   orbitRotationSpeed: 180

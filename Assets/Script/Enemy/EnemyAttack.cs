@@ -12,19 +12,17 @@ public class EnemyAttack : MonoBehaviour
     public bool IsAttacking { get; private set; } = false;
     private float nextAttackTime = 0f;
     private Animator anim;
-    private EnemyHealth healthScript; // 【修改】改为 EnemyHealth
+    private EnemyHealth healthScript;
 
     void Start()
     {
         anim = GetComponent<Animator>();
-        healthScript = GetComponent<EnemyHealth>(); // 【修改】
+        healthScript = GetComponent<EnemyHealth>();
     }
 
     public void TryAttack()
     {
-        // 【修改】从 healthScript 获取死亡状态
         if (healthScript != null && healthScript.IsDead) return;
-
         if (IsAttacking || Time.time < nextAttackTime) return;
         StartCoroutine(AttackRoutine());
     }
@@ -33,11 +31,8 @@ public class EnemyAttack : MonoBehaviour
     {
         IsAttacking = true;
         nextAttackTime = Time.time + attackCooldown;
-
         yield return new WaitForSeconds(0.05f);
-
         if (anim != null) anim.SetTrigger("Attack");
-
         yield return new WaitForSeconds(0.5f);
         IsAttacking = false;
     }
@@ -45,7 +40,6 @@ public class EnemyAttack : MonoBehaviour
     // 由动画事件调用
     public void OnAttackHitEvent()
     {
-        // 【修改】从 healthScript 获取死亡状态
         if (healthScript != null && healthScript.IsDead) return;
 
         Collider2D hit = Physics2D.OverlapCircle(transform.position, attackStopRange, playerLayer);
@@ -55,6 +49,7 @@ public class EnemyAttack : MonoBehaviour
             IDamageable target = hit.GetComponent<IDamageable>();
             if (target != null)
             {
+                // 怪物打玩家，不传击退力（默认为0）
                 target.TakeDamage(1, transform.position);
             }
         }

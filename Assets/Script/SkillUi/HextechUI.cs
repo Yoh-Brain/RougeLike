@@ -5,60 +5,66 @@ using UnityEngine;
 public class HextechUI : MonoBehaviour
 {
     [Header("UI 引用")]
-    public GameObject panelRoot;        // 整个面板（包含三张卡牌），用于显示/隐藏
-    public GameObject cardPrefab;       // 刚才做的单张卡牌预制体
-    public Transform cardContainer;     // 父节点 (Horizontal Layout Group)
+    public GameObject panelRoot;
+    public GameObject cardPrefab;
+    public Transform cardContainer;
 
-    [Header("数据引用")]
-    public SkillManager skillManager;   // 【新增】需要它来查询当前技能等级
-
-    private Action<SkillData> onSelectCallback;
+    private Action<UpgradeData> onSelectCallback;
     private List<GameObject> spawnedCards = new List<GameObject>();
 
     void Start()
     {
-        if (panelRoot != null) panelRoot.SetActive(false); // 初始隐藏
+        if (panelRoot != null) panelRoot.SetActive(false);
     }
 
-    // 供 HextechManager 调用的展示方法
-    public void ShowChoices(List<SkillData> choices, Action<SkillData> callback)
+    public void ShowChoices(List<UpgradeData> choices, Action<UpgradeData> callback)
     {
         onSelectCallback = callback;
+
+        // 【安全气囊1】检查 Panel Root
+        if (panelRoot == null)
+        {
+            Debug.LogError("【UI报错】HextechUI 的 Panel Root 槽位为空！请把面板拖进去！");
+            Time.timeScale = 1f; // 强行恢复时间
+            return;
+        }
+
+        // 【安全气囊2】检查 Card Prefab
+        if (cardPrefab == null || cardContainer == null)
+        {
+            Debug.LogError("【UI报错】HextechUI 的 Card Prefab 或 Card Container 槽位为空！");
+            Time.timeScale = 1f;
+            return;
+        }
+
         panelRoot.SetActive(true);
 
-        // 清理上一次生成的旧卡牌
-        foreach (var card in spawnedCards) Destroy(card);
+        foreach (var card in spawnedCards)
+        {
+            if (card != null) Destroy(card);
+        }
         spawnedCards.Clear();
 
-        // 循环生成 3 张新卡牌
-        foreach (var skill in choices)
+        foreach (var upgrade in choices)
         {
             GameObject cardObj = Instantiate(cardPrefab, cardContainer);
             spawnedCards.Add(cardObj);
 
-            // 获取卡牌上的脚本并注入数据
             HextechCardUI cardUI = cardObj.GetComponent<HextechCardUI>();
             if (cardUI != null)
             {
-                // 【核心修复】：查询当前等级，并一起传给 Setup
-                int currentLevel = 0;
-                if (skillManager != null)
-                {
-                    currentLevel = skillManager.GetSkillLevel(skill);
-                }
-
-                cardUI.Setup(skill, currentLevel, HandleCardSelected);
+                cardUI.Setup(upgrade, HandleCardSelected);
+            }
+            else
+            {
+                Debug.LogError("【UI报错】你的卡牌预制体上没有挂载 HextechCardUI 脚本！");
             }
         }
     }
 
-    // 单张卡牌被点击后的统一处理
-    private void HandleCardSelected(SkillData selectedSkill)
+    private void HandleCardSelected(UpgradeData selectedUpgrade)
     {
-        // 把选中的技能传回给 HextechManager
-        onSelectCallback?.Invoke(selectedSkill);
-
-        // 隐藏面板
+        onSelectCallback?.Invoke(selectedUpgrade);
         panelRoot.SetActive(false);
     }
 }

@@ -11,58 +11,78 @@ public class HextechCardUI : MonoBehaviour
     public TextMeshProUGUI skillName;
     public TextMeshProUGUI skillDesc;
 
-    private SkillData currentSkill;
-    private Action<SkillData> onClickCallback;
+    private UpgradeData currentUpgrade;
+    private Action<UpgradeData> onClickCallback;
 
-    // 【修改点】：需要传入当前等级来计算描述
-    public void Setup(SkillData skill, int currentLevel, Action<SkillData> callback)
+    public void Setup(UpgradeData upgrade, Action<UpgradeData> callback)
     {
-        currentSkill = skill;
+        currentUpgrade = upgrade;
         onClickCallback = callback;
 
-        if (skillIcon != null) skillIcon.sprite = skill.icon;
+        if (upgrade == null) return;
 
-        // 1. 判断是升级还是新学
-        bool isUpgrade = currentLevel > 0;
-        int nextLevel = currentLevel + 1;
+        if (skillIcon != null) skillIcon.sprite = upgrade.icon;
+        if (skillName != null) skillName.text = string.IsNullOrEmpty(upgrade.upgradeName) ? "Unknown" : upgrade.upgradeName;
+        if (skillDesc != null) skillDesc.text = "";
 
-        // 2. 修改标题
-        if (skillName != null)
+        try
         {
-            if (isUpgrade)
-                skillName.text = $"{skill.skillName} <color=#FFD700>Lv.{nextLevel}</color>"; // 升级时显示等级
-            else
-                skillName.text = skill.skillName;
+            // 如果是技能升级
+            if (upgrade is SkillUpgrade skillUpgrade)
+            {
+                SkillData skill = skillUpgrade.targetSkill;
+                if (skill == null)
+                {
+                    if (skillDesc != null) skillDesc.text = "<color=red>Error: No Skill Data</color>";
+                    return;
+                }
+
+                int currentLevel = 0;
+                SkillManager skillManager = PlayerAttributes.Instance != null ? PlayerAttributes.Instance.GetComponent<SkillManager>() : null;
+                if (skillManager != null) currentLevel = skillManager.GetSkillLevel(skill);
+
+                bool isUpgrade = currentLevel > 0;
+                int nextLevel = currentLevel + 1;
+
+                if (skillName != null)
+                {
+                    skillName.text = isUpgrade ? $"{skill.skillName} <color=#FFD700>Lv.{nextLevel}</color>" : skill.skillName;
+                }
+
+                if (skillDesc != null)
+                {
+                    skillDesc.text = (skill.description ?? "No Description") + "\n\n";
+                    if (isUpgrade)
+                        skillDesc.text += $"<color=#00FF00>Upgrade to Lv.{nextLevel}</color>";
+                    else
+                        skillDesc.text += $"<color=#00FF00>Unlock New Skill Lv.1</color>";
+                }
+            }
+            // 如果是 Buff
+            else if (upgrade is BuffUpgrade buffUpgrade)
+            {
+                if (skillDesc != null)
+                {
+                    string buffColor = buffUpgrade.modifierType == ModifierType.Flat ? "#FFD700" : "#00FF00";
+                    string sign = buffUpgrade.value > 0 ? "+" : "";
+                    string valText = buffUpgrade.modifierType == ModifierType.Flat
+                        ? buffUpgrade.value.ToString()
+                        : (buffUpgrade.value * 100).ToString() + "%";
+
+                    // statType.ToString() 会直接输出 Damage, MoveSpeed 等英文
+                    skillDesc.text = (upgrade.description ?? "") + $"\n\n<color={buffColor}>{sign}{valText} {buffUpgrade.statType}</color>";
+                }
+            }
         }
-
-        // 3. 动态生成描述
-        if (skillDesc != null)
+        catch (Exception e)
         {
-            string baseDesc = skill.description + "\n\n";
-
-            if (isUpgrade)
-            {
-                // 显示升级对比
-                int oldArrows = skill.GetFinalArrows(currentLevel);
-                int newArrows = skill.GetFinalArrows(nextLevel);
-                float oldDmg = skill.GetFinalDamage(currentLevel);
-                float newDmg = skill.GetFinalDamage(nextLevel);
-
-                baseDesc += $"<color=#888888>当前：{oldArrows}发 / {oldDmg}伤害</color>\n";
-                baseDesc += $"<color=#00FF00>升级：{newArrows}发 / {newDmg}伤害</color>";
-            }
-            else
-            {
-                // 新学技能，直接显示基础属性
-                baseDesc += $"<color=#00FF00>箭矢数量：{skill.GetFinalArrows(1)}发</color>\n";
-                baseDesc += $"<color=#00FF00>基础伤害：{skill.GetFinalDamage(1)}</color>";
-            }
-            skillDesc.text = baseDesc;
+            Debug.LogError($"Card UI Error: {e.Message}");
+            if (skillDesc != null) skillDesc.text = "<color=red>Card Data Error</color>";
         }
     }
 
     public void OnCardClicked()
     {
-        onClickCallback?.Invoke(currentSkill);
+        onClickCallback?.Invoke(currentUpgrade);
     }
 }
